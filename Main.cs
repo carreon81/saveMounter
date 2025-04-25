@@ -148,16 +148,16 @@ namespace PS4Saves
             int pid = selectedProcess.pid;
 
             var maps = ps4.GetProcessMaps(pid);
-            if (maps == null || maps.Length == 0)
+            if (maps == null)
             {
                 MessageBox.Show("Failed to get memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             // Seleccionamos el bloque de memoria más grande
-            var region = maps.OrderByDescending(m => m.End - m.Start).First();
-            ulong start = region.Start;
-            ulong size = region.End - region.Start;
+            ulong start = maps.Start;
+            ulong size = maps.End - maps.Start;
+
 
             // Dump de memoria
             byte[] dump = ps4.ReadMemory(pid, start, (int)size);
