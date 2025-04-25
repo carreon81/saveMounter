@@ -99,6 +99,18 @@
             processesButton.UseVisualStyleBackColor = true;
             processesButton.Click += processesButton_Click;
             // 
+            // dumpEbootButton
+            // 
+            this.dumpEbootButton = new System.Windows.Forms.Button();
+            this.dumpEbootButton.Location = new System.Drawing.Point(8, 190); // Ajustá la posición si querés
+            this.dumpEbootButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.dumpEbootButton.Name = "dumpEbootButton";
+            this.dumpEbootButton.Size = new System.Drawing.Size(241, 32);
+            this.dumpEbootButton.TabIndex = 4;
+            this.dumpEbootButton.Text = "Dump EBOOT";
+            this.dumpEbootButton.UseVisualStyleBackColor = true;
+            this.dumpEbootButton.Click += new System.EventHandler(this.dumpEbootButton_Click);
+            // 
             // setupButton
             // 
             setupButton.Location = new System.Drawing.Point(8, 150);
@@ -184,6 +196,7 @@
             connectionGroupBox.Controls.Add(connectButton);
             connectionGroupBox.Controls.Add(processesButton);
             connectionGroupBox.Controls.Add(setupButton);
+            connectionGroupBox.Controls.Add(dumpEbootButton);
             connectionGroupBox.Controls.Add(fwVersionComboBox);
             connectionGroupBox.Controls.Add(processesComboBox);
             connectionGroupBox.Controls.Add(userComboBox);
@@ -467,6 +480,8 @@
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.Button mountButton;
         private System.Windows.Forms.Button unmountButton;
+        private System.Windows.Forms.Button dumpEbootButton;
+
         private System.Windows.Forms.GroupBox connectionGroupBox;
         private System.Windows.Forms.Label ipLabel;
         private System.Windows.Forms.GroupBox createGroupBox;

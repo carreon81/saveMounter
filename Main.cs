@@ -131,6 +131,71 @@ namespace PS4Saves
             }
         }
 
+        private void dumpEbootButton_Click(object sender, EventArgs e)
+    {
+        if (processesComboBox.SelectedItem == null)
+        {
+            MessageBox.Show("Please select a process first.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            // El proceso seleccionado
+            ProcessListItem selectedProcess = (ProcessListItem)processesComboBox.SelectedItem;
+            int pid = selectedProcess.pid;
+
+            var maps = PS4DBG.GetProcessMaps(pid);
+            if (maps == null || maps.Length == 0)
+            {
+                MessageBox.Show("Failed to get memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Seleccionamos el bloque de memoria más grande
+            var region = maps.OrderByDescending(m => m.End - m.Start).First();
+            ulong start = region.Start;
+            ulong size = region.End - region.Start;
+
+            // Dump de memoria
+            byte[] dump = PS4DBG.ReadMemory(pid, start, (int)size);
+            if (dump == null || dump.Length == 0)
+            {
+                MessageBox.Show("Failed to dump memory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Guardamos como ebootDump.bin
+            string filePath = Path.Combine(Application.StartupPath, "ebootDump.bin");
+            File.WriteAllBytes(filePath, dump);
+
+            // Verificar si el EBOOT está desencriptado (tiene cabecera ELF)
+            bool isElf = false;
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                byte[] magic = new byte[4];
+                fs.Read(magic, 0, 4);
+                if (magic[0] == 0x7F && magic[1] == (byte)'E' && magic[2] == (byte)'L' && magic[3] == (byte)'F')
+                {
+                    isElf = true;
+                }
+            }
+
+            if (isElf)
+            {
+                MessageBox.Show("EBOOT dumped successfully as ebootDump.bin!\n\n✅ EBOOT appears to be decrypted (valid ELF header).", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("EBOOT dumped as ebootDump.bin.\n\n⚠️ Warning: EBOOT is likely still encrypted (no ELF header detected).", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
         private Process[] filter(ProcessList list)
         {
             List<Process> procs = new List<Process>();
