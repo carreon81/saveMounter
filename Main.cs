@@ -148,15 +148,17 @@ namespace PS4Saves
             int pid = selectedProcess.pid;
 
             var maps = ps4.GetProcessMaps(pid);
-            if (maps == null)
+            if (maps == null || maps.entries == null || maps.entries.Length == 0)
             {
                 MessageBox.Show("Failed to get memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // Seleccionamos el bloque de memoria más grande
-            ulong start = maps.Start;
-            ulong size = maps.End - maps.Start;
+            // Ahora sí podemos buscar la región más grande:
+            var region = maps.entries.OrderByDescending(m => m.end - m.start).First();
+
+            ulong start = region.start;
+            ulong size = region.end - region.start;
 
 
             // Dump de memoria
