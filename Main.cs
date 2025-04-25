@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Linq;
+
 
 namespace PS4Saves
 {
@@ -142,10 +144,10 @@ namespace PS4Saves
         try
         {
             // El proceso seleccionado
-            ProcessListItem selectedProcess = (ProcessListItem)processesComboBox.SelectedItem;
+            Process selectedProcess = (Process)processesComboBox.SelectedItem;
             int pid = selectedProcess.pid;
 
-            var maps = PS4DBG.GetProcessMaps(pid);
+            var maps = ps4.GetProcessMaps(pid);
             if (maps == null || maps.Length == 0)
             {
                 MessageBox.Show("Failed to get memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -158,7 +160,7 @@ namespace PS4Saves
             ulong size = region.End - region.Start;
 
             // Dump de memoria
-            byte[] dump = PS4DBG.ReadMemory(pid, start, (int)size);
+            byte[] dump = ps4.ReadMemory(pid, start, (int)size);
             if (dump == null || dump.Length == 0)
             {
                 MessageBox.Show("Failed to dump memory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
