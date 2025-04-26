@@ -23,8 +23,6 @@ namespace PS4Saves
         public Main()
         {
             InitializeComponent();
-            this.AutoSize = true;
-            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             fwVersionComboBox.Items.AddRange(Offsets.Firmwares);
             // fwVersionComboBox.SelectedItem = Offsets.SelectedFirmware;
             fwVersionComboBox.SelectedValueChanged += (sender, e) =>

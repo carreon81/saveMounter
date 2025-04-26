@@ -26,9 +26,11 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
+        private System.Windows.Forms.Panel mainPanel; 
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            mainPanel = new System.Windows.Forms.Panel();
             ipTextBox = new System.Windows.Forms.TextBox();
             connectButton = new System.Windows.Forms.Button();
             processesButton = new System.Windows.Forms.Button();
@@ -63,6 +65,12 @@
             label1 = new System.Windows.Forms.Label();
             fwVersionComboBox = new System.Windows.Forms.ComboBox();
             label2 = new System.Windows.Forms.Label();
+            mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            mainPanel.AutoScroll = true;
+            mainPanel.Location = new System.Drawing.Point(0, 0);
+            mainPanel.Name = "mainPanel";
+            mainPanel.Size = new System.Drawing.Size(1067, 730);
+            mainPanel.TabIndex = 0;
             connectionGroupBox.SuspendLayout();
             createGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)sizeTrackBar).BeginInit();
@@ -458,13 +466,15 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1067, 840);
-            Controls.Add(statusLabel);
-            Controls.Add(infoGroupBox);
-            Controls.Add(mountGroupBox);
-            Controls.Add(createGroupBox);
-            Controls.Add(connectionGroupBox);
-            this.Controls.Add(this.logTextBox);
+            ClientSize = new System.Drawing.Size(1067, 900);
+            mainPanel.Controls.Add(statusLabel);
+            mainPanel.Controls.Add(infoGroupBox);
+            mainPanel.Controls.Add(mountGroupBox);
+            mainPanel.Controls.Add(createGroupBox);
+            mainPanel.Controls.Add(connectionGroupBox);
+            mainPanel.Controls.Add(this.logTextBox);
+            this.Controls.Add(mainPanel);
+
 
             Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             Name = "Main";
