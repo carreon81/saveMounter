@@ -169,10 +169,10 @@ namespace PS4Saves
                     return;
                 }
 
-                // Buscar todas las regiones ejecutables (que contengan 'r-x' en sus permisos)
+                // Buscar todas las regiones que tengan permisos de lectura y ejecución
                 var executableRegions = maps.entries
-                    .Where(m => m.prot != null && m.prot.Contains("r-x"))
-                    .OrderBy(m => m.start) // Muy importante: ordenar por dirección de memoria
+                    .Where(m => (m.prot & 0x5) == 0x5) // CORREGIDO
+                    .OrderBy(m => m.start)
                     .ToList();
 
                 if (executableRegions.Count == 0)
