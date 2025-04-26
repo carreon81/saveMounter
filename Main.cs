@@ -157,10 +157,11 @@ namespace PS4Saves
 
             try
             {
-                // Proceso seleccionado
+                // El proceso seleccionado
                 Process selectedProcess = (Process)processesComboBox.SelectedItem;
                 int pid = selectedProcess.pid;
 
+                // Obtener los mapas de memoria
                 var maps = ps4.GetProcessMaps(pid);
                 if (maps == null || maps.entries == null || maps.entries.Length == 0)
                 {
@@ -168,41 +169,38 @@ namespace PS4Saves
                     return;
                 }
 
-                // Buscar TODAS las regiones que tengan "eboot.bin"
-                var ebootRegions = maps.entries
-                    .Where(m => m.name != null && m.name.Contains("eboot.bin"))
-                    .OrderBy(m => m.start)
+                // Buscar todas las regiones ejecutables (que contengan 'r-x' en sus permisos)
+                var executableRegions = maps.entries
+                    .Where(m => m.prot != null && m.prot.Contains("r-x"))
+                    .OrderBy(m => m.start) // Muy importante: ordenar por dirección de memoria
                     .ToList();
 
-                if (ebootRegions.Count == 0)
+                if (executableRegions.Count == 0)
                 {
-                    MessageBox.Show("Could not find eboot.bin in memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("No executable regions found.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                List<byte> fullDump = new List<byte>();
+                // Dump de todas las regiones ejecutables
+                List<byte> totalDump = new List<byte>();
 
-                foreach (var region in ebootRegions)
+                foreach (var region in executableRegions)
                 {
                     ulong start = region.start;
                     ulong size = region.end - region.start;
 
-                    byte[] partialDump = ps4.ReadMemory(pid, start, (int)size);
-
-                    if (partialDump == null || partialDump.Length == 0)
+                    byte[] regionDump = ps4.ReadMemory(pid, start, (int)size);
+                    if (regionDump != null && regionDump.Length > 0)
                     {
-                        MessageBox.Show($"Failed to dump a region at 0x{start:X}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        totalDump.AddRange(regionDump);
                     }
-
-                    fullDump.AddRange(partialDump);
                 }
 
-                // Guardar el dump completo
+                // Guardar el dump
                 string filePath = Path.Combine(Application.StartupPath, "ebootDump.bin");
-                File.WriteAllBytes(filePath, fullDump.ToArray());
+                File.WriteAllBytes(filePath, totalDump.ToArray());
 
-                // Verificar si es un ELF
+                // Verificar si el archivo empieza con ELF
                 bool isElf = false;
                 using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
