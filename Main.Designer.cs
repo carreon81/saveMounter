@@ -59,7 +59,7 @@
             titleLabel = new System.Windows.Forms.Label();
             sizeToolTip = new System.Windows.Forms.ToolTip(components);
             statusLabel = new System.Windows.Forms.Label();
-            this.logTextBox = new System.Windows.Forms.TextBox();
+            logTextBox = new System.Windows.Forms.TextBox();
             label1 = new System.Windows.Forms.Label();
             fwVersionComboBox = new System.Windows.Forms.ComboBox();
             label2 = new System.Windows.Forms.Label();
