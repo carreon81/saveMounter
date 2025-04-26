@@ -12,7 +12,6 @@ namespace PS4Saves
     public partial class Main : Form
     {
         PS4DBG ps4 = new PS4DBG();
-        private System.Windows.Forms.TextBox logTextBox;
         private int pid;
         private ulong stub;
         private ulong libSceUserServiceBase = 0x0;
