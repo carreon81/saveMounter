@@ -148,77 +148,86 @@ namespace PS4Saves
         }
 
         private void dumpEbootButton_Click(object sender, EventArgs e)
-    {
-        if (processesComboBox.SelectedItem == null)
         {
-            MessageBox.Show("Please select a process first.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
-        }
-
-        try
-        {
-            // El proceso seleccionado
-            Process selectedProcess = (Process)processesComboBox.SelectedItem;
-            int pid = selectedProcess.pid;
-
-            var maps = ps4.GetProcessMaps(pid);
-            if (maps == null || maps.entries == null || maps.entries.Length == 0)
+            if (processesComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Failed to get memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please select a process first.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Buscar la región que contiene "eboot.bin" en su nombre
-            var region = maps.entries.FirstOrDefault(m => m.name != null && m.name.Contains("eboot.bin"));
-
-            if (region == null)
+            try
             {
-                MessageBox.Show("Could not find eboot.bin in memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                // Proceso seleccionado
+                Process selectedProcess = (Process)processesComboBox.SelectedItem;
+                int pid = selectedProcess.pid;
 
-            ulong start = region.start;
-            ulong size = region.end - region.start;
-
-            // Dump de memoria
-            byte[] dump = ps4.ReadMemory(pid, start, (int)size);
-            if (dump == null || dump.Length == 0)
-            {
-                MessageBox.Show("Failed to dump memory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Guardar como ebootDump.bin
-            string filePath = Path.Combine(Application.StartupPath, "ebootDump.bin");
-            File.WriteAllBytes(filePath, dump);
-
-            // Verificar si el EBOOT está desencriptado (tiene cabecera ELF)
-            bool isElf = false;
-            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                byte[] magic = new byte[4];
-                fs.Read(magic, 0, 4);
-                if (magic[0] == 0x7F && magic[1] == (byte)'E' && magic[2] == (byte)'L' && magic[3] == (byte)'F')
+                var maps = ps4.GetProcessMaps(pid);
+                if (maps == null || maps.entries == null || maps.entries.Length == 0)
                 {
-                    isElf = true;
+                    MessageBox.Show("Failed to get memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Buscar TODAS las regiones que tengan "eboot.bin"
+                var ebootRegions = maps.entries
+                    .Where(m => m.name != null && m.name.Contains("eboot.bin"))
+                    .OrderBy(m => m.start)
+                    .ToList();
+
+                if (ebootRegions.Count == 0)
+                {
+                    MessageBox.Show("Could not find eboot.bin in memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                List<byte> fullDump = new List<byte>();
+
+                foreach (var region in ebootRegions)
+                {
+                    ulong start = region.start;
+                    ulong size = region.end - region.start;
+
+                    byte[] partialDump = ps4.ReadMemory(pid, start, (int)size);
+
+                    if (partialDump == null || partialDump.Length == 0)
+                    {
+                        MessageBox.Show($"Failed to dump a region at 0x{start:X}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    fullDump.AddRange(partialDump);
+                }
+
+                // Guardar el dump completo
+                string filePath = Path.Combine(Application.StartupPath, "ebootDump.bin");
+                File.WriteAllBytes(filePath, fullDump.ToArray());
+
+                // Verificar si es un ELF
+                bool isElf = false;
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    byte[] magic = new byte[4];
+                    fs.Read(magic, 0, 4);
+                    if (magic[0] == 0x7F && magic[1] == (byte)'E' && magic[2] == (byte)'L' && magic[3] == (byte)'F')
+                    {
+                        isElf = true;
+                    }
+                }
+
+                if (isElf)
+                {
+                    MessageBox.Show("✅ EBOOT dumped successfully as ebootDump.bin!\n\nIt appears to be decrypted (valid ELF header).", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("⚠️ EBOOT dumped as ebootDump.bin.\n\nWarning: EBOOT may still be encrypted (no ELF header detected).", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
-
-            if (isElf)
+            catch (Exception ex)
             {
-                MessageBox.Show("✅ EBOOT dumped successfully as ebootDump.bin!\n\nIt appears to be decrypted (valid ELF header).", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("⚠️ EBOOT dumped as ebootDump.bin.\n\nWarning: EBOOT may still be encrypted (no ELF header detected).", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception ex)
-        {
-            MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
-
 
         private Process[] filter(ProcessList list)
         {
