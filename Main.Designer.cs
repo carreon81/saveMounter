@@ -59,6 +59,7 @@
             titleLabel = new System.Windows.Forms.Label();
             sizeToolTip = new System.Windows.Forms.ToolTip(components);
             statusLabel = new System.Windows.Forms.Label();
+            this.logTextBox = new System.Windows.Forms.TextBox();
             label1 = new System.Windows.Forms.Label();
             fwVersionComboBox = new System.Windows.Forms.ComboBox();
             label2 = new System.Windows.Forms.Label();
@@ -102,7 +103,7 @@
             // dumpEbootButton
             // 
             this.dumpEbootButton = new System.Windows.Forms.Button();
-            this.dumpEbootButton.Location = new System.Drawing.Point(8, 190); // Ajustá la posición si querés
+            this.dumpEbootButton.Location = new System.Drawing.Point(8, 232); // Ajustá la posición si querés
             this.dumpEbootButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dumpEbootButton.Name = "dumpEbootButton";
             this.dumpEbootButton.Size = new System.Drawing.Size(241, 32);
@@ -204,7 +205,7 @@
             connectionGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             connectionGroupBox.Name = "connectionGroupBox";
             connectionGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            connectionGroupBox.Size = new System.Drawing.Size(505, 195);
+            connectionGroupBox.Size = new System.Drawing.Size(505, 270);
             connectionGroupBox.TabIndex = 10;
             connectionGroupBox.TabStop = false;
             connectionGroupBox.Text = "Connection";
@@ -411,6 +412,16 @@
             statusLabel.TabIndex = 13;
             statusLabel.Text = "Status:";
             // 
+            // logTextBox
+            // 
+            this.logTextBox.Location = new System.Drawing.Point(523, 600);
+            this.logTextBox.Multiline = true;
+            this.logTextBox.Name = "logTextBox";
+            this.logTextBox.ReadOnly = true;
+            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.logTextBox.Size = new System.Drawing.Size(528, 100);
+            this.logTextBox.TabIndex = 14;
+            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -446,12 +457,14 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1067, 628);
+            ClientSize = new System.Drawing.Size(1067, 730);
             Controls.Add(statusLabel);
             Controls.Add(infoGroupBox);
             Controls.Add(mountGroupBox);
             Controls.Add(createGroupBox);
             Controls.Add(connectionGroupBox);
+            this.Controls.Add(this.logTextBox);
+
             Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             Name = "Main";
             Text = "Playstation 4 Save Mounter 1.3.1 [ps4debug]";
@@ -505,6 +518,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox fwVersionComboBox;
+        private System.Windows.Forms.TextBox logTextBox;
+
     }
 }
 

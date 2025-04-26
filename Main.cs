@@ -12,6 +12,7 @@ namespace PS4Saves
     public partial class Main : Form
     {
         PS4DBG ps4 = new PS4DBG();
+        private System.Windows.Forms.TextBox logTextBox;
         private int pid;
         private ulong stub;
         private ulong libSceUserServiceBase = 0x0;
@@ -72,7 +73,6 @@ namespace PS4Saves
         {
             if (log)
             {
-
                 msg = $"|{msg}|";
                 var a = msg.Length / 2;
                 for (var i = 0; i < 48 - a; i++)
@@ -88,10 +88,10 @@ namespace PS4Saves
                 var dateAndTime = DateTime.Now;
                 var logStr = $"|{dateAndTime:MM/dd/yyyy} {dateAndTime:hh:mm:ss tt}| |{msg}|";
 
+                // Escribir en el archivo como antes
                 if (File.Exists(@"log.txt"))
                 {
-                    File.AppendAllText(@"log.txt",
-                        $"{logStr}{Environment.NewLine}");
+                    File.AppendAllText(@"log.txt", $"{logStr}{Environment.NewLine}");
                 }
                 else
                 {
@@ -101,9 +101,24 @@ namespace PS4Saves
                     }
                 }
 
+                // Mostrar en la consola como antes
                 Console.WriteLine(logStr);
+
+                // 🔵 Agregado nuevo: mostrar también en el TextBox de la ventana
+                if (logTextBox.InvokeRequired)
+                {
+                    logTextBox.Invoke(new Action(() =>
+                    {
+                        logTextBox.AppendText($"{dateAndTime:HH:mm:ss} {msg}{Environment.NewLine}");
+                    }));
+                }
+                else
+                {
+                    logTextBox.AppendText($"{dateAndTime:HH:mm:ss} {msg}{Environment.NewLine}");
+                }
             }
         }
+
         private void connectButton_Click(object sender, EventArgs e)
         {
             try
