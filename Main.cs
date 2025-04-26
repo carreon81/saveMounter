@@ -168,12 +168,17 @@ namespace PS4Saves
                 return;
             }
 
-            // Ahora sí podemos buscar la región más grande:
-            var region = maps.entries.OrderByDescending(m => m.end - m.start).First();
+            // Buscar la región que contiene "eboot.bin" en su nombre
+            var region = maps.entries.FirstOrDefault(m => m.name != null && m.name.Contains("eboot.bin"));
+
+            if (region == null)
+            {
+                MessageBox.Show("Could not find eboot.bin in memory maps.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             ulong start = region.start;
             ulong size = region.end - region.start;
-
 
             // Dump de memoria
             byte[] dump = ps4.ReadMemory(pid, start, (int)size);
@@ -183,7 +188,7 @@ namespace PS4Saves
                 return;
             }
 
-            // Guardamos como ebootDump.bin
+            // Guardar como ebootDump.bin
             string filePath = Path.Combine(Application.StartupPath, "ebootDump.bin");
             File.WriteAllBytes(filePath, dump);
 
@@ -201,11 +206,11 @@ namespace PS4Saves
 
             if (isElf)
             {
-                MessageBox.Show("EBOOT dumped successfully as ebootDump.bin!\n\n✅ EBOOT appears to be decrypted (valid ELF header).", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("✅ EBOOT dumped successfully as ebootDump.bin!\n\nIt appears to be decrypted (valid ELF header).", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show("EBOOT dumped as ebootDump.bin.\n\n⚠️ Warning: EBOOT is likely still encrypted (no ELF header detected).", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("⚠️ EBOOT dumped as ebootDump.bin.\n\nWarning: EBOOT may still be encrypted (no ELF header detected).", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         catch (Exception ex)
@@ -213,6 +218,7 @@ namespace PS4Saves
             MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
+
 
         private Process[] filter(ProcessList list)
         {
