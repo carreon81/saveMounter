@@ -236,7 +236,7 @@
             createGroupBox.Controls.Add(nameLabel);
             createGroupBox.Controls.Add(nameTextBox);
             createGroupBox.Controls.Add(createButton);
-            createGroupBox.Location = new System.Drawing.Point(10, 396);
+            createGroupBox.Location = new System.Drawing.Point(10, 530);
             createGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             createGroupBox.Name = "createGroupBox";
             createGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -304,7 +304,7 @@
             mountGroupBox.Controls.Add(dirsComboBox);
             mountGroupBox.Controls.Add(mountButton);
             mountGroupBox.Controls.Add(unmountButton);
-            mountGroupBox.Location = new System.Drawing.Point(9, 223);
+            mountGroupBox.Location = new System.Drawing.Point(9, 350);
             mountGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             mountGroupBox.Name = "mountGroupBox";
             mountGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
