@@ -103,7 +103,7 @@
             // dumpEbootButton
             // 
             this.dumpEbootButton = new System.Windows.Forms.Button();
-            this.dumpEbootButton.Location = new System.Drawing.Point(8, 192); // Ajustá la posición si querés
+            this.dumpEbootButton.Location = new System.Drawing.Point(8, 190); // Ajustá la posición si querés
             this.dumpEbootButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dumpEbootButton.Name = "dumpEbootButton";
             this.dumpEbootButton.Size = new System.Drawing.Size(489, 32);
@@ -206,7 +206,7 @@
             connectionGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             connectionGroupBox.Name = "connectionGroupBox";
             connectionGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            connectionGroupBox.Size = new System.Drawing.Size(505, 270);
+            connectionGroupBox.Size = new System.Drawing.Size(505, 320);
             connectionGroupBox.TabIndex = 10;
             connectionGroupBox.TabStop = false;
             connectionGroupBox.Text = "Connection";
